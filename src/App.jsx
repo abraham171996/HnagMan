@@ -4,6 +4,7 @@ import Level from './components/Level';
 import { wordList } from './mock/wordList';
 import Letter from './components/Letter';
 import Hint from './components/Hint';
+import Lost from './components/Lost';
 
 const App = () => {
   const [word, setWord] = useState('');
@@ -15,6 +16,7 @@ const App = () => {
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
   const [lost ,setLost] = useState (false)
+  // eslint-disable-next-line no-unused-vars
   let tryCount;
   const selectRandomWord = () => {
     
@@ -46,21 +48,10 @@ const App = () => {
       setIncorrectGuess(incorrectGuess + 1);
     }
 
-    updateCurrentWordState(letter);
+    
     checkGameOver();
   };
 
-  const updateCurrentWordState = (letter) => {
-    const newWordState = word.split('').map((char, index) => {
-      if (char === letter) {
-        return letter;
-      } else {
-        return currentWordState[index * 2];
-      }
-    }).join(' ');
-
-    setCurrentWordState(newWordState);
-  };
 
   const checkGameOver = () => {
     
@@ -68,10 +59,11 @@ const App = () => {
       setIsGameOver(true);
       
     }
-    if ((selectedLevel === "easy" && incorrectGuess === 6) ||
-    (selectedLevel === "medium" && incorrectGuess === 5) ||
-    (selectedLevel === "hard" && incorrectGuess === 4)) {
+    if ((selectedLevel === "easy" && incorrectGuess < 7 && incorrectGuess >= 5) ||
+    (selectedLevel === "medium" && incorrectGuess <6 && incorrectGuess >= 4) ||
+    (selectedLevel === "hard" && incorrectGuess < 5 && incorrectGuess >= 3)) {
   setLost(true);
+  
 }
     
   };  
@@ -81,9 +73,7 @@ const App = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLevel]);
 
-  console.log('incorrectGuess:', incorrectGuess);
-console.log('tryCount:', tryCount);
-console.log(selectedLevel);
+ 
   return (
     <>
       {showLevel ? (
@@ -99,9 +89,7 @@ console.log(selectedLevel);
           <Init incorrectGuess={incorrectGuess} lost = {lost} />
           {
             lost ? (
-              <p>
-                Lost!
-              </p>
+              <Lost/>
             ):(
               <>
                     <Letter
