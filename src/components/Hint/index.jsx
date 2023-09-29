@@ -1,11 +1,15 @@
 import React from 'react'
 import styles from './hint.module.scss'
-const Hint = ({isGameOver,word,hint}) => {
+import Button from '../Button'
+const Hint = ({isGameOver,word,hint,restartGame}) => {
   return (
     
         <div className={styles.Hint}>
             {isGameOver ? (
-              <p>Congratulations! You guessed the word: {word}</p>
+              <div className={styles.Hint__warpper}>
+                <p>Congratulations! You guessed the word: {word}</p>
+                <Button onClick={restartGame}>Start again!</Button>
+              </div>
             ) : (
               <p>Hint: {hint}</p>
             )}

@@ -4,9 +4,9 @@ const Letter = ({handleGuess,guessedLetters,isGameOver}) => {
   return (
     <div>
         <div className="letter-selection">
-            {alphabet.map((letter) => (
+            {alphabet.map((letter,index) => (
               <button
-                key={letter}
+                key={`${letter}_${index}`}
                 onClick={() => handleGuess(letter)}
                 disabled={guessedLetters.includes(letter) || isGameOver}
               >
