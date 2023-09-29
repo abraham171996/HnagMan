@@ -14,9 +14,10 @@ const App = () => {
   const [selectedLevel, setSelectedLevel] = useState('');
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
-
+  const [lost ,setLost] = useState (false)
+  let tryCount;
   const selectRandomWord = () => {
-    let tryCount;
+    
 
     if (selectedLevel === 'easy') {
       tryCount = 6;
@@ -62,15 +63,27 @@ const App = () => {
   };
 
   const checkGameOver = () => {
+    
     if (word === currentWordState.replace(/ /g, '')) {
       setIsGameOver(true);
+      
     }
-  };
+    if ((selectedLevel === "easy" && incorrectGuess === 6) ||
+    (selectedLevel === "medium" && incorrectGuess === 5) ||
+    (selectedLevel === "hard" && incorrectGuess === 4)) {
+  setLost(true);
+}
+    
+  };  
 
   useEffect(() => {
     selectRandomWord();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLevel]);
 
+  console.log('incorrectGuess:', incorrectGuess);
+console.log('tryCount:', tryCount);
+console.log(selectedLevel);
   return (
     <>
       {showLevel ? (
@@ -83,8 +96,15 @@ const App = () => {
         />
       ) : (
         <>
-          <Init incorrectGuess={incorrectGuess} />
-          <Letter
+          <Init incorrectGuess={incorrectGuess} lost = {lost} />
+          {
+            lost ? (
+              <p>
+                Lost!
+              </p>
+            ):(
+              <>
+                    <Letter
             handleGuess={handleGuess}
             guessedLetters={guessedLetters}
             isGameOver={isGameOver}
@@ -94,6 +114,9 @@ const App = () => {
             word={word} 
             hint={hint}
           />
+              </>
+            )
+          }
         </>
       )}
     </>
@@ -102,4 +125,4 @@ const App = () => {
 
 export default App;
 
-// Rest of your code...
+
