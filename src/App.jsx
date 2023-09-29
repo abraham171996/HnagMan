@@ -1,137 +1,164 @@
 import React, { useEffect, useState } from 'react';
 import Init from './components/Init';
-import Level from './components/Level';
-import { wordList } from './mock/wordList';
 import Letter from './components/Letter';
 import Hint from './components/Hint';
 import Lost from './components/Lost';
+import { wordList } from './mock/wordList';
+import Level from './components/Level'
 
 const App = () => {
-  const [word, setWord] = useState('');
-  const [hint, setHint] = useState('');
-  const [incorrectGuess, setIncorrectGuess] = useState(0);
-  const [showLevel, setShowLevel] = useState(true);
-  const [currentWordState, setCurrentWordState] = useState('');
-  const [selectedLevel, setSelectedLevel] = useState('');
-  const [guessedLetters, setGuessedLetters] = useState([]);
-  const [isGameOver, setIsGameOver] = useState(false);
-  const [lost ,setLost] = useState (false)
- 
+  const [gameState, setGameState] = useState({
+    word: '',
+    hint: '',
+    incorrectGuess: 0,
+    showLevel: true,
+    currentWordState: '',
+    selectedLevel: '',
+    guessedLetters: [],
+    isGameOver: false,
+    lost: false,
+  });
+
   useEffect(() => {
     selectRandomWord();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLevel]);
+  }, [gameState.selectedLevel]);
 
   useEffect(() => {
-    if (word === currentWordState.replace(/ /g, '')) {
-      setIsGameOver(true);
-      setIncorrectGuess(0);
+    if (gameState.word === gameState.currentWordState.replace(/ /g, '')) {
+      setGameState({ ...gameState, isGameOver: true, incorrectGuess: 0 });
     }
-  }, [word, currentWordState]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.word, gameState.currentWordState]);
 
   const selectRandomWord = () => {
     let tryCount;
 
-    if (selectedLevel === 'easy') {
+    if (gameState.selectedLevel === 'easy') {
       tryCount = 6;
-    } else if (selectedLevel === 'medium') {
+    } else if (gameState.selectedLevel === 'medium') {
       tryCount = 5;
-    } else if (selectedLevel === 'hard') {
+    } else if (gameState.selectedLevel === 'hard') {
       // eslint-disable-next-line no-unused-vars
       tryCount = 4;
     }
 
     const randomIndex = Math.floor(Math.random() * wordList.length);
     const selectedWord = wordList[randomIndex];
-    setWord(selectedWord.word);
-    setHint(selectedWord.hint);
-    setCurrentWordState('_ '.repeat(selectedWord.word.length));
-    setIncorrectGuess(0);
-    setIsGameOver(false);
+    setGameState({
+      ...gameState,
+      word: selectedWord.word,
+      hint: selectedWord.hint,
+      currentWordState: '_ '.repeat(selectedWord.word.length),
+      incorrectGuess: 0,
+      isGameOver: false,
+    });
   };
 
   const handleGuess = (letter) => {
-    if (guessedLetters.includes(letter) || isGameOver) {
+    if (gameState.guessedLetters.includes(letter) || gameState.isGameOver) {
       return;
     }
-    setGuessedLetters([...guessedLetters, letter]);
-
-    if (!word.includes(letter)) {
-      setIncorrectGuess(incorrectGuess + 1);
+  
+    const guessedLetters = [...gameState.guessedLetters, letter];
+  
+    let incorrectGuess = gameState.incorrectGuess;
+    if (!gameState.word.includes(letter)) {
+      incorrectGuess += 1;
     }
-    updateCurrentWordState(letter);
-    checkGameOver();
+  
+    updateCurrentWordState(letter, guessedLetters, incorrectGuess);
   };
 
-  const updateCurrentWordState = (letter) => {
-    const newWordState = word.split('').map((char, index) => {
-      if (char === letter) {
-        return letter;
-      } else {
-        return currentWordState[index * 2];
-      }
-    }).join(' ');
-
-    setCurrentWordState(newWordState);
+  const updateCurrentWordState = (letter, guessedLetters, incorrectGuess) => {
+    const newWordState = gameState.word
+      .split('')
+      .map((char, index) => {
+        if (char === letter) {
+          return letter;
+        } else {
+          return gameState.currentWordState[index * 2];
+        }
+      })
+      .join(' ');
+  
+    const isGameOver = newWordState.replace(/ /g, '') === gameState.word;
+  
+    setGameState({
+      ...gameState,
+      currentWordState: newWordState,
+      guessedLetters,
+      incorrectGuess,
+      isGameOver,
+    });
+  
+    checkGameOver(isGameOver, incorrectGuess);
   };
 
   const checkGameOver = () => {
-    if ((selectedLevel === "easy" && incorrectGuess < 7 && incorrectGuess >= 5) ||
-    (selectedLevel === "medium" && incorrectGuess <6 && incorrectGuess >= 4) ||
-    (selectedLevel === "hard" && incorrectGuess < 5 && incorrectGuess >= 3)) {
-  setLost(true);
-  
-}
-    
-  };  
+    if (
+      (gameState.selectedLevel === 'easy' &&
+        gameState.incorrectGuess === 6) ||
+      (gameState.selectedLevel === 'medium' &&
+        gameState.incorrectGuess  === 5) ||
+      (gameState.selectedLevel === 'hard' &&
+        gameState.incorrectGuess === 4)
+    ) {
+      setGameState({ ...gameState, lost: true });
+    }
+  };
 
-  function restartGame(){
-    setShowLevel(true)
-    setCurrentWordState("")
-    setWord("")
-    setHint("")
-    setIncorrectGuess(0)
-    setGuessedLetters([])
-    setIsGameOver(false)
-    setLost(false)
-    setSelectedLevel("")
+  function restartGame() {
+    setGameState({
+      ...gameState,
+      showLevel: true,
+      currentWordState: '',
+      word: '',
+      hint: '',
+      incorrectGuess: 0,
+      guessedLetters: [],
+      isGameOver: false,
+      lost: false,
+      selectedLevel: '',
+    });
   }
 
-  
-
- 
   return (
     <>
-      {showLevel ? (
+      {gameState.showLevel ? (
         <Level
-          selectedLevel={selectedLevel}
+          selectedLevel={gameState.selectedLevel}
           onSelectLevel={(level) => {
-            setShowLevel(false);
-            setSelectedLevel(level);
+            setGameState({
+              ...gameState,
+              showLevel: false,
+              selectedLevel: level,
+            });
           }}
         />
       ) : (
         <>
-          <Init incorrectGuess={incorrectGuess} lost = {lost} />
-          {
-            lost ? (
-              <Lost restartGame={restartGame} word={word}/>
-            ):(
-              <>
-                    <Letter
-            handleGuess={handleGuess}
-            guessedLetters={guessedLetters}
-            isGameOver={isGameOver}
+          <Init
+            incorrectGuess={gameState.incorrectGuess}
+            lost={gameState.lost}
           />
-          <Hint 
-            isGameOver={isGameOver} 
-            word={word} 
-            hint={hint}
-            restartGame = {restartGame}
-          />
-              </>
-            )
-          }
+          {gameState.lost ? (
+            <Lost restartGame={restartGame} word={gameState.word} />
+          ) : (
+            <>
+              <Letter
+                handleGuess={handleGuess}
+                guessedLetters={gameState.guessedLetters}
+                isGameOver={gameState.isGameOver}
+              />
+              <Hint
+                isGameOver={gameState.isGameOver}
+                word={gameState.word}
+                hint={gameState.hint}
+                restartGame={restartGame}
+              />
+            </>
+          )}
         </>
       )}
     </>
@@ -139,5 +166,3 @@ const App = () => {
 };
 
 export default App;
-
-
