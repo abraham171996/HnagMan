@@ -1,0 +1,12 @@
+.Level{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    justify-content: center;
+    align-items: center;
+    button{
+        width: 200px;
+        height: 55px;
+        cursor: pointer;
+    }
+}
