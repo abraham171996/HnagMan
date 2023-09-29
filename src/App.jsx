@@ -17,7 +17,18 @@ const App = () => {
   const [isGameOver, setIsGameOver] = useState(false);
   const [lost ,setLost] = useState (false)
  
-  
+  useEffect(() => {
+    selectRandomWord();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLevel]);
+
+  useEffect(() => {
+    if (word === currentWordState.replace(/ /g, '')) {
+      setIsGameOver(true);
+      setIncorrectGuess(0);
+    }
+  }, [word, currentWordState]);
+
   const selectRandomWord = () => {
     let tryCount;
 
@@ -48,7 +59,6 @@ const App = () => {
     if (!word.includes(letter)) {
       setIncorrectGuess(incorrectGuess + 1);
     }
-
     updateCurrentWordState(letter);
     checkGameOver();
   };
@@ -65,12 +75,6 @@ const App = () => {
     setCurrentWordState(newWordState);
   };
 
-  useEffect(() => {
-    if (word === currentWordState.replace(/ /g, '')) {
-      setIsGameOver(true);
-      setIncorrectGuess(0);
-    }
-  }, [word, currentWordState]);
   const checkGameOver = () => {
     if ((selectedLevel === "easy" && incorrectGuess < 7 && incorrectGuess >= 5) ||
     (selectedLevel === "medium" && incorrectGuess <6 && incorrectGuess >= 4) ||
@@ -92,10 +96,8 @@ const App = () => {
     setLost(false)
     setSelectedLevel("")
   }
-  useEffect(() => {
-    selectRandomWord();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedLevel]);
+
+  
 
  
   return (
