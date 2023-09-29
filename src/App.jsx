@@ -49,11 +49,21 @@ const App = () => {
       setIncorrectGuess(incorrectGuess + 1);
     }
 
-    
+    updateCurrentWordState(letter);
     checkGameOver();
   };
 
+  const updateCurrentWordState = (letter) => {
+    const newWordState = word.split('').map((char, index) => {
+      if (char === letter) {
+        return letter;
+      } else {
+        return currentWordState[index * 2];
+      }
+    }).join(' ');
 
+    setCurrentWordState(newWordState);
+  };
   const checkGameOver = () => {
     
     if (word === currentWordState.replace(/ /g, '')) {
