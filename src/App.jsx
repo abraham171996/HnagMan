@@ -16,16 +16,17 @@ const App = () => {
   const [guessedLetters, setGuessedLetters] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
   const [lost ,setLost] = useState (false)
-  // eslint-disable-next-line no-unused-vars
-  let tryCount;
+ 
+  
   const selectRandomWord = () => {
-    
+    let tryCount;
 
     if (selectedLevel === 'easy') {
       tryCount = 6;
     } else if (selectedLevel === 'medium') {
       tryCount = 5;
     } else if (selectedLevel === 'hard') {
+      // eslint-disable-next-line no-unused-vars
       tryCount = 4;
     }
 
