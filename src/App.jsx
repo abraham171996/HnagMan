@@ -96,16 +96,16 @@ const App = () => {
   };
 
   const checkGameOver = () => {
-    if (
-      (gameState.selectedLevel === 'easy' &&
-        gameState.incorrectGuess === 6) ||
-      (gameState.selectedLevel === 'medium' &&
-        gameState.incorrectGuess  === 5) ||
-      (gameState.selectedLevel === 'hard' &&
-        gameState.incorrectGuess === 4)
-    ) {
+    const difficultyThresholds = {
+      easy: 6,
+      medium: 5,
+      hard: 4,
+    };
+  
+    const { selectedLevel, incorrectGuess } = gameState;
+  
+    incorrectGuess === difficultyThresholds[selectedLevel] &&
       setGameState({ ...gameState, lost: true });
-    }
   };
 
   function restartGame() {
