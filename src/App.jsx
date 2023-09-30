@@ -4,10 +4,10 @@ import Letter from './components/Letter';
 import Hint from './components/Hint';
 import Lost from './components/Lost';
 import { wordList } from './mock/wordList';
-import Level from './components/Level'
+import Level from './components/Level';
 
 const App = () => {
-  const [gameState, setGameState] = useState({
+  const initialGameState = {
     word: '',
     hint: '',
     incorrectGuess: 0,
@@ -17,7 +17,9 @@ const App = () => {
     guessedLetters: [],
     isGameOver: false,
     lost: false,
-  });
+  };
+
+  const [gameState, setGameState] = useState(initialGameState);
 
   useEffect(() => {
     selectRandomWord();
@@ -46,11 +48,10 @@ const App = () => {
     const randomIndex = Math.floor(Math.random() * wordList.length);
     const selectedWord = wordList[randomIndex];
     setGameState({
-      ...gameState,
+      ...initialGameState,
       word: selectedWord.word,
       hint: selectedWord.hint,
       currentWordState: '_ '.repeat(selectedWord.word.length),
-      incorrectGuess: 0,
       isGameOver: false,
     });
   };
@@ -59,14 +60,14 @@ const App = () => {
     if (gameState.guessedLetters.includes(letter) || gameState.isGameOver) {
       return;
     }
-  
+
     const guessedLetters = [...gameState.guessedLetters, letter];
-  
+
     let incorrectGuess = gameState.incorrectGuess;
     if (!gameState.word.includes(letter)) {
       incorrectGuess += 1;
     }
-  
+
     updateCurrentWordState(letter, guessedLetters, incorrectGuess);
   };
 
@@ -81,9 +82,9 @@ const App = () => {
         }
       })
       .join(' ');
-  
+
     const isGameOver = newWordState.replace(/ /g, '') === gameState.word;
-  
+
     setGameState({
       ...gameState,
       currentWordState: newWordState,
@@ -91,7 +92,7 @@ const App = () => {
       incorrectGuess,
       isGameOver,
     });
-  
+
     checkGameOver(isGameOver, incorrectGuess);
   };
 
@@ -101,27 +102,17 @@ const App = () => {
       medium: 5,
       hard: 4,
     };
-  
+
     const { selectedLevel, incorrectGuess } = gameState;
-  
-    incorrectGuess === difficultyThresholds[selectedLevel] &&
+
+    if (incorrectGuess === difficultyThresholds[selectedLevel]) {
       setGameState({ ...gameState, lost: true });
+    }
   };
 
-  function restartGame() {
-    setGameState({
-      ...gameState,
-      showLevel: true,
-      currentWordState: '',
-      word: '',
-      hint: '',
-      incorrectGuess: 0,
-      guessedLetters: [],
-      isGameOver: false,
-      lost: false,
-      selectedLevel: '',
-    });
-  }
+  const restartGame = () => {
+    setGameState(initialGameState);
+  };
 
   return (
     <>
@@ -138,10 +129,7 @@ const App = () => {
         />
       ) : (
         <>
-          <Init
-            incorrectGuess={gameState.incorrectGuess}
-            lost={gameState.lost}
-          />
+          <Init incorrectGuess={gameState.incorrectGuess} lost={gameState.lost} />
           {gameState.lost ? (
             <Lost restartGame={restartGame} word={gameState.word} />
           ) : (
