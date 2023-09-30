@@ -7,7 +7,7 @@ import { wordList } from './mock/wordList';
 import Level from './components/Level'
 
 const App = () => {
-  const [gameState, setGameState] = useState({
+  const initialGameState = {
     word: '',
     hint: '',
     incorrectGuess: 0,
@@ -17,7 +17,8 @@ const App = () => {
     guessedLetters: [],
     isGameOver: false,
     lost: false,
-  });
+  };
+  const [gameState, setGameState] = useState(initialGameState);
 
   useEffect(() => {
     selectRandomWord();
@@ -109,18 +110,7 @@ const App = () => {
   };
 
   function restartGame() {
-    setGameState({
-      ...gameState,
-      showLevel: true,
-      currentWordState: '',
-      word: '',
-      hint: '',
-      incorrectGuess: 0,
-      guessedLetters: [],
-      isGameOver: false,
-      lost: false,
-      selectedLevel: '',
-    });
+    setGameState(initialGameState);
   }
 
   return (
