@@ -1,0 +1,17 @@
+.Init{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+    h1{
+        font-family: Inter;
+        font-weight: 700;
+        font-size: 40px;
+    }
+    p{
+        font-family: Inter;
+        font-size: 14px;
+        font-weight: 400;
+    }
+}
